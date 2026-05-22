@@ -100,8 +100,47 @@ body {
     color: white;
     font-weight: 700;
     letter-spacing: 1px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     font-size: 2rem;
+}
+
+.auth-mode-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 6px;
+    margin-bottom: 22px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-mode-btn {
+    min-height: 42px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #b9b9b9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-mode-btn.active {
+    background: var(--brand-green);
+    color: #050505;
+    box-shadow: 0 0 16px rgba(102, 255, 51, 0.22);
+}
+
+.auth-mode-panel {
+    display: none;
+}
+
+.auth-mode-panel.active {
+    display: block;
 }
 
 .login-form .form-group {
@@ -196,6 +235,19 @@ body {
     background: var(--panel-soft);
 }
 
+.auth-helper-text {
+    margin-top: 15px;
+    margin-bottom: 0;
+    text-align: center;
+    color: #ccc;
+}
+
+.auth-helper-text a {
+    color: var(--brand-green);
+    cursor: pointer;
+    font-weight: 600;
+}
+
 .btn-google-auth {
     width: 100%;
     min-height: 48px;
@@ -210,8 +262,22 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    padding: 10px 16px;
+    line-height: 1.2;
+    text-align: center;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-google-auth-admin {
+    min-height: 56px;
+    gap: 12px;
+    padding: 10px 18px;
+}
+
+.btn-google-auth-admin span {
+    flex: 0 1 auto;
+    max-width: 260px;
 }
 
 .btn-google-auth:hover {
@@ -230,6 +296,7 @@ body {
 .google-mark {
     width: 24px;
     height: 24px;
+    flex: 0 0 24px;
     border-radius: 50%;
     display: block;
     object-fit: cover;

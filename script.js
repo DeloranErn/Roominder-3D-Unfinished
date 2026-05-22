@@ -5,10 +5,10 @@
 import { auth, db, googleProvider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signOut } from './firebase-config.js';
 import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const DEFAULT_ADMIN_ACCOUNTS = [
-    { username: 'admin', password: 'admin@123' },
-    { username: 'roomadmin', password: 'roomiinder@2024' }
-];
+const ADMIN_LOGIN_EMAILS = {
+    admin: 'ernaldoquirojr@gmail.com',
+    roomadmin: 'REPLACE_WITH_ROOMADMIN_EMAIL'
+};
 
 // ========== DATA STORE ==========
 const app = {
@@ -36,9 +36,26 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-function handleAuthStateChange(user) {
+async function handleAuthStateChange(user) {
     if (user) {
         app.currentUser = user;
+
+        if (sessionStorage.getItem('roominderAdminSession') === 'true') {
+            try {
+                const adminSnapshot = await getDoc(doc(db, "admins", user.uid));
+
+                if (adminSnapshot.exists()) {
+                    app.isAdmin = true;
+                    showAdminDashboard();
+                    return;
+                }
+            } catch (error) {
+                console.error("Admin session check failed:", error);
+            }
+
+            sessionStorage.removeItem('roominderAdminSession');
+        }
+
         app.isAdmin = false; 
         if ($('#userNameDisplay').length) {
             $('#userNameDisplay').text(user.email.split('@')[0]); 
@@ -46,6 +63,8 @@ function handleAuthStateChange(user) {
         showUserDashboard();
     } else {
         app.currentUser = null;
+        app.isAdmin = false;
+        sessionStorage.removeItem('roominderAdminSession');
         $('#userDashboardScreen').hide();
         $('#adminDashboardScreen').hide();
         $('#authScreen').show();
@@ -57,12 +76,32 @@ function handleAuthStateChange(user) {
 function toggleAuthForm() {
     $('#loginFormDiv').toggle();
     $('#signupFormDiv').toggle();
-    $('#formTitle').text($('#loginFormDiv').is(':visible') ? 'LOGIN' : 'SIGN UP');
+    $('#formTitle').text($('#loginFormDiv').is(':visible') ? 'USER LOGIN' : 'CREATE ACCOUNT');
+    $('#errorMessage').hide();
 }
 
 function toggleAdminForm() {
-    $('#adminLoginDiv').toggle();
-    $('#adminFormDiv').toggle();
+    switchAuthMode('admin');
+}
+
+function switchAuthMode(mode) {
+    const isAdminMode = mode === 'admin';
+
+    $('.auth-mode-btn').removeClass('active');
+    $(`[data-auth-mode="${mode}"]`).addClass('active');
+
+    $('#userAuthPanel').toggleClass('active', !isAdminMode).toggle(!isAdminMode);
+    $('#adminFormDiv').toggleClass('active', isAdminMode).toggle(isAdminMode);
+
+    if (isAdminMode) {
+        $('#formTitle').text('ADMIN LOGIN');
+    } else {
+        $('#loginFormDiv').show();
+        $('#signupFormDiv').hide();
+        $('#formTitle').text('USER LOGIN');
+    }
+
+    $('#errorMessage').hide();
 }
 
 function showError(message) {
@@ -70,45 +109,6 @@ function showError(message) {
     setTimeout(() => {
         $('#errorMessage').fadeOut();
     }, 4000);
-}
-
-function getAdminDocId(username) {
-    return username.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '_');
-}
-
-async function seedDefaultAdminAccounts() {
-    for (const admin of DEFAULT_ADMIN_ACCOUNTS) {
-        const adminRef = doc(db, "admins", getAdminDocId(admin.username));
-        const existingAdmin = await getDoc(adminRef);
-
-        if (!existingAdmin.exists()) {
-            await setDoc(adminRef, {
-                username: admin.username,
-                password: admin.password,
-                role: 'admin',
-                active: true,
-                createdAt: serverTimestamp()
-            });
-        }
-    }
-}
-
-async function getAdminByCredentials(username, password) {
-    await seedDefaultAdminAccounts();
-
-    const adminRef = doc(db, "admins", getAdminDocId(username));
-    const adminSnapshot = await getDoc(adminRef);
-
-    if (!adminSnapshot.exists()) {
-        return null;
-    }
-
-    const admin = adminSnapshot.data();
-    if (admin.active === false || admin.password !== password) {
-        return null;
-    }
-
-    return { id: adminSnapshot.id, ...admin };
 }
 
 function createEmptyScheduleMap() {
@@ -152,6 +152,11 @@ async function loadReservationRequestsFromFirestore() {
     app.reservationRequests.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
 }
 
+function getAdminEmailFromUsername(username) {
+    const normalizedUsername = username.trim().toLowerCase();
+    return ADMIN_LOGIN_EMAILS[normalizedUsername] || username;
+}
+
 async function saveUserProfile(user, profile = {}) {
     const userRef = doc(db, "users", user.uid);
     const existingUser = await getDoc(userRef);
@@ -172,10 +177,38 @@ async function saveUserProfile(user, profile = {}) {
     });
 }
 
+async function openAdminDashboardForUser(user) {
+    const adminSnapshot = await getDoc(doc(db, "admins", user.uid));
+
+    if (!adminSnapshot.exists()) {
+        await signOut(auth);
+        showError('This account is not an admin');
+        return false;
+    }
+
+    app.isAdmin = true;
+    app.currentUser = user;
+    sessionStorage.setItem('roominderAdminSession', 'true');
+    showAdminDashboard();
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Admin Login Successful',
+        text: 'Welcome, Admin!',
+        confirmButtonColor: '#66ff33',
+        timer: 1500
+    });
+
+    return true;
+}
+
 // ========== DOCUMENT READY - BIND ALL EVENT HANDLERS ==========
 
 $(document).ready(function() {
-    
+    $('.auth-mode-btn').on('click', function() {
+        switchAuthMode($(this).data('auth-mode'));
+    });
+
     $('#loginBtn').on('click', async function() {
         const email = $('#loginEmail').val().trim();
         const password = $('#loginPassword').val().trim();
@@ -276,22 +309,9 @@ $(document).ready(function() {
         try {
             const btn = $(this);
             btn.text('LOGGING IN...').prop('disabled', true);
-            const admin = await getAdminByCredentials(username, password);
-
-            if (admin) {
-                app.isAdmin = true;
-                app.currentUser = admin;
-                showAdminDashboard();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Admin Login Successful',
-                    text: 'Welcome, Admin!',
-                    confirmButtonColor: '#66ff33',
-                    timer: 1500
-                });
-            } else {
-                showError('Invalid admin credentials');
-            }
+            const email = getAdminEmailFromUsername(username);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            await openAdminDashboardForUser(userCredential.user);
         } catch (error) {
             console.error("Admin login error:", error);
             showError('Admin login failed: ' + error.message);
@@ -300,12 +320,18 @@ $(document).ready(function() {
         }
     });
 
-    $('#adminLoginToggleBtn').on('click', function() {
-        toggleAdminForm();
-    });
-
-    $('#adminBackBtn').on('click', function() {
-        toggleAdminForm();
+    $('#adminGoogleLoginBtn').on('click', async function() {
+        try {
+            const btn = $(this);
+            btn.text('CONNECTING...').prop('disabled', true);
+            const userCredential = await signInWithPopup(auth, googleProvider);
+            await openAdminDashboardForUser(userCredential.user);
+        } catch (error) {
+            console.error("Admin Google login error:", error);
+            showError('Admin Google login failed: ' + error.message);
+        } finally {
+            $(this).html('<img src="googleicon.jpg" alt="" class="google-mark"><span>CONTINUE AS ADMIN WITH GOOGLE</span>').prop('disabled', false);
+        }
     });
 
 }); // End of document.ready()

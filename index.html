@@ -16,67 +16,68 @@
     <div class="glow-wrapper">
         <div class="login-container">
             <div class="login-form">
-                <h1 id="formTitle">LOGIN</h1>
-                
-                <div id="loginFormDiv">
-                    <div class="form-group">
-                        <label for="loginEmail">Email</label>
-                        <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
-                    </div>
-                    <button id="loginBtn" class="btn-auth">LOGIN</button>
-                    <div class="auth-divider"><span>or</span></div>
-                    <button type="button" id="googleLoginBtn" class="btn-google-auth">
-                        <img src="googleicon.jpg" alt="" class="google-mark">
-                        CONTINUE WITH GOOGLE
-                    </button>
-                    <p style="margin-top: 15px; text-align: center; color: #ccc;">Don't have an account? <a href="#" onclick="toggleAuthForm()" style="color: var(--brand-green); cursor: pointer;">Sign Up</a></p>
+                <h1 id="formTitle">USER LOGIN</h1>
+
+                <div class="auth-mode-switch" role="tablist" aria-label="Login type">
+                    <button type="button" class="auth-mode-btn active" id="userModeBtn" data-auth-mode="user">User</button>
+                    <button type="button" class="auth-mode-btn" id="adminModeBtn" data-auth-mode="admin">Admin</button>
                 </div>
 
-                <div id="signupFormDiv" style="display: none;">
-                    <div class="form-group">
-                        <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" class="form-control" placeholder="Enter your full name">
+                <div id="userAuthPanel" class="auth-mode-panel active">
+                    <div id="loginFormDiv">
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
+                        </div>
+                        <button id="loginBtn" class="btn-auth">LOGIN</button>
+                        <div class="auth-divider"><span>or</span></div>
+                        <button type="button" id="googleLoginBtn" class="btn-google-auth">
+                            <img src="googleicon.jpg" alt="" class="google-mark">
+                            CONTINUE WITH GOOGLE
+                        </button>
+                        <p class="auth-helper-text">Don't have an account? <a href="#" onclick="toggleAuthForm()">Sign Up</a></p>
                     </div>
-                    <div class="form-group">
-                        <label for="signupEmail">Email</label>
-                        <input type="email" id="signupEmail" class="form-control" placeholder="Enter your email">
+
+                    <div id="signupFormDiv" style="display: none;">
+                        <div class="form-group">
+                            <label for="signupName">Full Name</label>
+                            <input type="text" id="signupName" class="form-control" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail">Email</label>
+                            <input type="email" id="signupEmail" class="form-control" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" class="form-control" placeholder="Enter a password">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupConfirmPassword">Confirm Password</label>
+                            <input type="password" id="signupConfirmPassword" class="form-control" placeholder="Confirm your password">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupGender">Gender</label>
+                            <select id="signupGender" class="form-control">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupOccupation">Occupation</label>
+                            <input type="text" id="signupOccupation" class="form-control" placeholder="e.g., Teacher, Student">
+                        </div>
+                        <button id="signupBtn" class="btn-auth">SIGN UP</button>
+                        <p class="auth-helper-text">Already have an account? <a href="#" onclick="toggleAuthForm()">Login</a></p>
                     </div>
-                    <div class="form-group">
-                        <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" class="form-control" placeholder="Enter a password">
-                    </div>
-                    <div class="form-group">
-                        <label for="signupConfirmPassword">Confirm Password</label>
-                        <input type="password" id="signupConfirmPassword" class="form-control" placeholder="Confirm your password">
-                    </div>
-                    <div class="form-group">
-                        <label for="signupGender">Gender</label>
-                        <select id="signupGender" class="form-control">
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="signupOccupation">Occupation</label>
-                        <input type="text" id="signupOccupation" class="form-control" placeholder="e.g., Teacher, Student">
-                    </div>
-                    <button id="signupBtn" class="btn-auth">SIGN UP</button>
-                    <p style="margin-top: 15px; text-align: center; color: #ccc;">Already have an account? <a href="#" onclick="toggleAuthForm()" style="color: var(--brand-green); cursor: pointer;">Login</a></p>
                 </div>
 
-                <hr style="border-color: #444; margin-top: 20px; margin-bottom: 15px;">
-                <div id="adminLoginDiv" style="text-align: center;">
-                    <p style="color: #888; font-size: 0.9rem; margin-bottom: 10px;">Admin Access</p>
-                    <button type="button" id="adminLoginToggleBtn" class="btn-auth-secondary">LOGIN AS ADMIN</button>
-                </div>
-
-                <div id="adminFormDiv" style="display: none;">
+                <div id="adminFormDiv" class="auth-mode-panel" style="display: none;">
                     <div class="form-group">
                         <label for="adminUsername">Admin Username</label>
                         <input type="text" id="adminUsername" class="form-control" placeholder="Enter admin username">
@@ -86,7 +87,11 @@
                         <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password">
                     </div>
                     <button type="button" id="adminLoginBtn" class="btn-auth">LOGIN</button>
-                    <button type="button" id="adminBackBtn" class="btn-auth-cancel">BACK TO USER LOGIN</button>
+                    <div class="auth-divider"><span>or</span></div>
+                    <button type="button" id="adminGoogleLoginBtn" class="btn-google-auth btn-google-auth-admin">
+                        <img src="googleicon.jpg" alt="" class="google-mark">
+                        <span>CONTINUE AS ADMIN WITH GOOGLE</span>
+                    </button>
                 </div>
 
                 <div id="errorMessage" style="color: #ff6b6b; text-align: center; margin-top: 15px; display: none;"></div>
