@@ -2,7 +2,7 @@
 // ROOMINDER - MAIN APPLICATION SCRIPT
 // ============================================
 
-import { auth, db, googleProvider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signOut } from '../firebase-config.js';
+import { auth, db, googleProvider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signOut } from './firebase-config.js';
 import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const DEFAULT_ADMIN_ACCOUNTS = [
