@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOMINDER - Room Booking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="authScreen" class="auth-screen">
+    <div class="glow-wrapper">
+        <div class="login-container">
+            <div class="login-form">
+                <h1 id="formTitle">LOGIN</h1>
+                
+                <div id="loginFormDiv">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
+                    </div>
+                    <button id="loginBtn" class="btn-auth">LOGIN</button>
+                    <div class="auth-divider"><span>or</span></div>
+                    <button type="button" id="googleLoginBtn" class="btn-google-auth">
+                        <img src="googleicon.jpg" alt="" class="google-mark">
+                        CONTINUE WITH GOOGLE
+                    </button>
+                    <p style="margin-top: 15px; text-align: center; color: #ccc;">Don't have an account? <a href="#" onclick="toggleAuthForm()" style="color: var(--brand-green); cursor: pointer;">Sign Up</a></p>
+                </div>
+
+                <div id="signupFormDiv" style="display: none;">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-control" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-control" placeholder="Enter a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-control" placeholder="Confirm your password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupGender">Gender</label>
+                        <select id="signupGender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupOccupation">Occupation</label>
+                        <input type="text" id="signupOccupation" class="form-control" placeholder="e.g., Teacher, Student">
+                    </div>
+                    <button id="signupBtn" class="btn-auth">SIGN UP</button>
+                    <p style="margin-top: 15px; text-align: center; color: #ccc;">Already have an account? <a href="#" onclick="toggleAuthForm()" style="color: var(--brand-green); cursor: pointer;">Login</a></p>
+                </div>
+
+                <hr style="border-color: #444; margin-top: 20px; margin-bottom: 15px;">
+                <div id="adminLoginDiv" style="text-align: center;">
+                    <p style="color: #888; font-size: 0.9rem; margin-bottom: 10px;">Admin Access</p>
+                    <button type="button" id="adminLoginToggleBtn" class="btn-auth-secondary">LOGIN AS ADMIN</button>
+                </div>
+
+                <div id="adminFormDiv" style="display: none;">
+                    <div class="form-group">
+                        <label for="adminUsername">Admin Username</label>
+                        <input type="text" id="adminUsername" class="form-control" placeholder="Enter admin username">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Admin Password</label>
+                        <input type="password" id="adminPassword" class="form-control" placeholder="Enter admin password">
+                    </div>
+                    <button type="button" id="adminLoginBtn" class="btn-auth">LOGIN</button>
+                    <button type="button" id="adminBackBtn" class="btn-auth-cancel">BACK TO USER LOGIN</button>
+                </div>
+
+                <div id="errorMessage" style="color: #ff6b6b; text-align: center; margin-top: 15px; display: none;"></div>
+            </div>
+
+            <div class="welcome-panel">
+                <h1>Welcome to ROOMINDER</h1>
+                <p>Your intelligent room booking and scheduling system designed to streamline academic facility management.</p>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">📅</div>
+                        <p>Easy Room Reservation</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⏰</div>
+                        <p>Hourly Time Slots</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <p>Admin Approval System</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="userDashboardScreen" class="dashboard-screen" style="display: none;">
+    <div class="yellow-strip"></div>
+    
+    <a href="#" onclick="logout()" class="logout-fixed">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Logout</span>
+    </a>
+
+    <nav class="top-nav">
+        <button class="nav-btn active-tab" data-tab="reservation" onclick="switchUserTab('reservation')">Hourly Reservation</button>
+        <button class="nav-btn" data-tab="viewing" onclick="switchUserTab('viewing')">Viewing</button>
+        <button class="nav-btn" data-tab="searching" onclick="switchUserTab('searching')">Room Inventory</button>
+    </nav>
+
+    <div class="main-container">
+        <div class="glass-panel">
+
+            <div id="reservationPanel" class="tab-panel active">
+                <div class="panel-header">
+                    <h1>ROOM <span style="color: var(--text-white);">RESERVATION</span></h1>
+                    <p>Welcome, <span style="color: var(--brand-yellow);" id="userNameDisplay">User</span>! Today is <span id="todayDate"></span></p>
+                </div>
+                
+                <div class="table-responsive">
+                    <table id="roomsTable" class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="booking-section">
+                    <div class="form-group">
+                        <label>Select Date</label>
+                        <select id="dateSelect" class="form-control-dark">
+                            <option value="">-- Choose Date --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Room & Time Slot</label>
+                        <select id="timeSlotSelect" class="form-control-dark" disabled>
+                            <option value="">-- First select a date --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Purpose of Booking</label>
+                        <input type="text" id="bookingPurpose" class="form-control-dark" placeholder="e.g., Class Meeting">
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button id="sendRequestBtn" class="btn-action">SEND RESERVATION REQUEST</button>
+                </div>
+            </div>
+
+            <div id="viewingPanel" class="tab-panel">
+                <div class="panel-header">
+                    <h1>WEEKLY <span style="color: var(--brand-green);">SCHEDULE</span></h1>
+                    <p>View the schedules for all days of the week.</p>
+                </div>
+                <div id="weeklySchedulesContainer"></div>
+            </div>
+
+            <div id="searchingPanel" class="tab-panel">
+                <div class="panel-header">
+                    <h1>ROOM <span style="color: var(--brand-green);">INVENTORY</span></h1>
+                    <p>Browse all available rooms and their features.</p>
+                </div>
+                <div class="table-responsive">
+                    <table id="roomInventoryTable" class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Room Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomInventoryTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="adminDashboardScreen" class="admin-dashboard-screen" style="display: none;">
+    <div class="sidebar">
+        <div class="sidebar-brand">ROOM<span>INDER</span></div>
+        <nav class="sidebar-nav">
+            <a class="nav-link active-tab" data-tab="admin-users" onclick="switchAdminTab('admin-users')">
+                👥 Users
+            </a>
+            <a class="nav-link" data-tab="admin-requests" onclick="switchAdminTab('admin-requests')">
+                📋 Pending Requests <span class="notification-badge" id="pendingBadge">0</span>
+            </a>
+            <a class="nav-link" data-tab="admin-schedule" onclick="switchAdminTab('admin-schedule')">
+                📅 Schedules
+            </a>
+            <a class="nav-link" data-tab="admin-rooms" onclick="switchAdminTab('admin-rooms')">
+                🏠 Rooms
+            </a>
+            <a href="#" onclick="logout()" class="nav-link" style="margin-top: auto; color: #ff6b6b;">
+                🚪 Logout
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div id="admin-usersPanel" class="tab-content active">
+            <div class="dashboard-card">
+                <div class="card-header-custom">All Users</div>
+                <div class="table-responsive">
+                    <table id="usersTable" class="table table-dark-custom">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Occupation</th>
+                                <th>Joined Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-requestsPanel" class="tab-content">
+            <div class="dashboard-card">
+                <div class="card-header-custom">Pending Reservation Requests</div>
+                <div class="table-responsive">
+                    <table id="requestsTable" class="table table-dark-custom">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Room</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Purpose</th>
+                                <th>Requested</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-schedulePanel" class="tab-content">
+            <div class="dashboard-card">
+                <div class="card-header-custom">Weekly Schedules</div>
+                
+                <div class="schedule-controls" style="margin-bottom: 25px;">
+                    <label>Select Day:</label>
+                    <select id="scheduleDay" class="form-select-dark" style="width: 200px;">
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                    </select>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="scheduleTable" class="table table-dark-custom">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h5 style="color: var(--brand-green); margin-bottom: 15px;">Add New Schedule</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div>
+                            <label>Room</label>
+                            <input type="text" id="scheduleRoom" class="form-control-dark" placeholder="e.g., B201">
+                        </div>
+                        <div>
+                            <label>Start Time</label>
+                            <input type="time" id="scheduleStart" class="form-control-dark">
+                        </div>
+                        <div>
+                            <label>End Time</label>
+                            <input type="time" id="scheduleEnd" class="form-control-dark">
+                        </div>
+                        <div>
+                            <label>Status</label>
+                            <select id="scheduleStatus" class="form-control-dark">
+                                <option value="Vacant">Vacant</option>
+                                <option value="Occupied">Occupied</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="addScheduleBtn" class="btn-primary" style="margin-top: 15px; width: 100%;">ADD SCHEDULE</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-roomsPanel" class="tab-content">
+            <div class="dashboard-card">
+                <div class="card-header-custom">Room Management</div>
+                <div class="table-responsive">
+                    <table id="roomsManagementTable" class="table table-dark-custom">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomsManagementTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h5 style="color: var(--brand-green); margin-bottom: 15px;">Add New Room</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div>
+                            <label>Room Name</label>
+                            <input type="text" id="newRoomName" class="form-control-dark" placeholder="e.g., B201">
+                        </div>
+                        <div>
+                            <label>Room Type</label>
+                            <input type="text" id="newRoomType" class="form-control-dark" placeholder="e.g., Laboratory">
+                        </div>
+                        <div>
+                            <label>Status</label>
+                            <select id="newRoomStatus" class="form-control-dark">
+                                <option value="Vacant">Vacant</option>
+                                <option value="Occupied">Occupied</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="addRoomBtn" class="btn-primary" style="margin-top: 15px; width: 100%;">ADD ROOM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>
